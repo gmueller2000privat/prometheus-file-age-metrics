@@ -7,7 +7,7 @@
 usage() {
     echo "Usage: $0 -a <max_age_in_minutes> [-p <metric_prefix>] -f <file> [-f <file>]"
     echo
-    echo "Use quotation marks if using wildcards for files (eg. -f \"foo*.tgz\")"
+    echo "Quote filenames including wildcards. (eg. -f \"foo*.tgz\")"
     exit 1
 }
 
@@ -24,7 +24,7 @@ while getopts "a:f:p:" o; do
 	      FILES+=("$FILE")
 	    done
 	    ;;
-	h)
+	*)
 	    usage
 	    ;;
      esac
