@@ -6,6 +6,8 @@
 #
 usage() {
     echo "Usage: $0 -a <max_age_in_minutes> [-p <metric_prefix>] -f <file> [-f <file>]"
+    echo
+    echo "Use quotation marks if using wildcards for files (eg. -f \"foo*.tgz\")"
     exit 1
 }
 
@@ -18,12 +20,14 @@ while getopts "a:f:p:" o; do
             METRIC_PREFIX=${OPTARG}
             ;;
         f)
-	    FILES+=("$OPTARG")
+	    for FILE in ${OPTARG[@]}; do
+	      FILES+=("$FILE")
+	    done
 	    ;;
-        *)
-            usage
-            ;;
-    esac
+	h)
+	    usage
+	    ;;
+     esac
 done
 shift $((OPTIND -1))
 
@@ -59,7 +63,7 @@ for FILEPATH in "${FILES[@]}"; do
     DIRNAME=$(dirname $FILEPATH)
     FILENAME=$(basename $FILEPATH)
 
-    find $DIRNAME -name $FILENAME -mmin +$MAX_AGE|grep $FILENAME #/dev/null 2>&1
+    find $DIRNAME -name $FILENAME -mmin +$MAX_AGE|grep $FILENAME -q #/dev/null 2>&1
     if [ $? -eq 1 ]; then
         UP_TO_DATE=$((UP_TO_DATE+1))
     elif [ $? -ne 0 ]; then
